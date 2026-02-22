@@ -41,8 +41,6 @@ export class Home {
   conditions = signal<BuoyData[] | null>(null);
   loading = signal(true);
   error = signal(false);
-  private readonly now = signal(Date.now());
-
   private readonly latestDate = computed<Date | null>(() => {
     const ts = this.conditions()?.[0]?.timestamp;
     return ts ? parseConditionTimestamp(ts) : null;
@@ -50,7 +48,11 @@ export class Home {
 
   updatedAt = computed<string | null>(() => {
     const date = this.latestDate();
-    return date ? formatRelativeTime(date, this.now()) : null;
+    if (!date) return null;
+    return date.toLocaleString(undefined, {
+      month: 'short', day: 'numeric', year: 'numeric',
+      hour: 'numeric', minute: '2-digit', timeZoneName: 'short',
+    });
   });
 
   protected readonly updatedAtIso = computed<string | null>(() =>
@@ -74,7 +76,6 @@ export class Home {
   });
 
   constructor() {
-    setInterval(() => this.now.set(Date.now()), 60_000);
     this.buoyService.getCurrentConditions().subscribe(data => {
       this.conditions.set(data);
       this.loading.set(false);
