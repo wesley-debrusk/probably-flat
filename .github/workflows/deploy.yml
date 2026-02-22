@@ -10,6 +10,9 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: probably-flat-frontend
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -17,8 +20,8 @@ jobs:
           node-version: 22
       - run: npm ci
       - run: npm run build -- --base-href "/probably-flat/"
-      - run: cp dist/probably-flat-frontend/browser/index.html dist/probably-flat/browser/404.html
+      - run: cp dist/probably-flat-frontend/browser/index.html dist/probably-flat-frontend/browser/404.html
       - uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist/probably-flat-frontend/browser
+          publish_dir: ./probably-flat-frontend/dist/probably-flat-frontend/browser
