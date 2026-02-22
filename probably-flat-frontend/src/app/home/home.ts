@@ -3,6 +3,17 @@ import { BuoyService, BuoyData } from '../services/buoy-service';
 import { ConditionCardComponent, ConditionCard } from '../condition-card/condition-card';
 import { WaveHeightChartComponent } from '../wave-height-chart/wave-height-chart';
 
+export function formatRelativeTime(date: Date, now: number): string {
+  const diffMs = now - date.getTime();
+  const diffMin = Math.floor(diffMs / 60_000);
+  const diffHr = Math.floor(diffMs / 3_600_000);
+  const diffDay = Math.floor(diffMs / 86_400_000);
+  if (diffMin < 1) return 'just now';
+  if (diffMin < 60) return diffMin === 1 ? '1 minute ago' : `${diffMin} minutes ago`;
+  if (diffHr < 24) return diffHr === 1 ? '1 hour ago' : `${diffHr} hours ago`;
+  return diffDay === 1 ? '1 day ago' : `${diffDay} days ago`;
+}
+
 function degreesToCompass(deg: string): string {
   const n = parseFloat(deg);
   if (isNaN(n)) return deg;
