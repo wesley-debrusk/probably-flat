@@ -40,6 +40,42 @@
           @if (linePath()) {
             <path [attr.d]="linePath()" fill="none" stroke="#14b8a6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
           }
+          @if (staleRegion()) {
+            <rect
+              [attr.x]="staleRegion()!.x"
+              y="0"
+              [attr.width]="staleRegion()!.width"
+              [attr.height]="layout.innerH"
+              fill="#0f172a"
+              opacity="0.5"
+              aria-hidden="true"
+            />
+          }
+          @if (hoveredPoint()) {
+            <line
+              [attr.x1]="tooltipX()" [attr.x2]="tooltipX()"
+              y1="0" [attr.y2]="layout.innerH"
+              stroke="#14b8a6" stroke-width="1" stroke-dasharray="4 2" opacity="0.6"
+            />
+            <circle
+              [attr.cx]="tooltipX()" [attr.cy]="tooltipY()"
+              r="4" fill="#14b8a6" stroke="white" stroke-width="1.5"
+            />
+            <g [attr.transform]="'translate(' + (tooltipFlipped() ? tooltipX() - 114 : tooltipX() + 10) + ',' + (tooltipY() - 32) + ')'">
+              <rect width="104" height="44" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1" />
+              <text x="10" y="17" font-size="11" fill="#94a3b8">{{ tooltipLabel()?.time }}</text>
+              <text x="10" y="33" font-size="13" font-weight="600" fill="#f1f5f9">{{ tooltipLabel()?.height }}</text>
+            </g>
+          }
+          <rect
+            [attr.width]="layout.innerW"
+            [attr.height]="layout.innerH"
+            fill="transparent"
+            style="cursor: crosshair"
+            aria-hidden="true"
+            (mousemove)="onMouseMove($event)"
+            (mouseleave)="onMouseLeave()"
+          />
           <line [attr.x1]="0" [attr.x2]="layout.innerW" [attr.y1]="layout.innerH" [attr.y2]="layout.innerH" stroke="currentColor" class="text-slate-600" stroke-width="1" />
           @for (tick of xTicks(); track tick.offset) {
             <g [attr.transform]="'translate(' + tick.offset + ',0)'">

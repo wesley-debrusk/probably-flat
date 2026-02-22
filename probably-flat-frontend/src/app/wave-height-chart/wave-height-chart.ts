@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, signal } from '@angular/core';
 import { HlmCardImports } from '@spartan-ng/helm/card';
 import { BuoyData } from '../services/buoy-service';
 import * as d3 from 'd3';
@@ -52,11 +52,23 @@ export class WaveHeightChartComponent {
     return parsed.filter(p => p.date.getTime() >= cutoff);
   });
 
+  private readonly nowMs = Date.now();
+
   protected readonly xScale = computed(() => {
     const pts = this.chartPoints();
     if (pts.length < 2) return null;
     const [min, max] = d3.extent(pts, p => p.date) as [Date, Date];
-    return d3.scaleTime().domain([min, max]).range([0, INNER_W]);
+    const domainMax = new Date(Math.max(max.getTime(), this.nowMs));
+    return d3.scaleTime().domain([min, domainMax]).range([0, INNER_W]);
+  });
+
+  protected readonly staleRegion = computed<{ x: number; width: number } | null>(() => {
+    const pts = this.chartPoints();
+    const xSc = this.xScale();
+    if (!pts.length || !xSc) return null;
+    const lastX = xSc(pts[pts.length - 1].date);
+    if (lastX >= INNER_W - 1) return null;
+    return { x: lastX, width: INNER_W - lastX };
   });
 
   protected readonly yScale = computed(() => {
@@ -97,4 +109,42 @@ export class WaveHeightChartComponent {
   protected readonly hasData = computed(() => this.chartPoints().length >= 2);
 
   protected readonly layout = { viewW: VIEW_W, viewH: VIEW_H, margin: MARGIN, innerW: INNER_W, innerH: INNER_H };
+
+  private readonly bisector = d3.bisector<ChartPoint, Date>(p => p.date).center;
+
+  protected readonly hoveredPoint = signal<ChartPoint | null>(null);
+  protected readonly tooltipX = signal<number>(0);
+  protected readonly tooltipY = signal<number>(0);
+
+  protected readonly tooltipLabel = computed(() => {
+    const pt = this.hoveredPoint();
+    if (!pt) return null;
+    return {
+      time: pt.date.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' }),
+      height: `${pt.waveHeight.toFixed(1)} ft`,
+    };
+  });
+
+  protected readonly tooltipFlipped = computed(() => this.tooltipX() > INNER_W * 0.6);
+
+  onMouseMove(event: MouseEvent): void {
+    const xSc = this.xScale();
+    const ySc = this.yScale();
+    const pts = this.chartPoints();
+    if (!xSc || !ySc || !pts.length) return;
+
+    const rect = (event.currentTarget as SVGRectElement).getBoundingClientRect();
+    const mouseX = (event.clientX - rect.left) * (INNER_W / rect.width);
+    const date = xSc.invert(mouseX);
+    const idx = Math.max(0, Math.min(this.bisector(pts, date), pts.length - 1));
+    const pt = pts[idx];
+
+    this.hoveredPoint.set(pt);
+    this.tooltipX.set(xSc(pt.date));
+    this.tooltipY.set(ySc(pt.waveHeight));
+  }
+
+  onMouseLeave(): void {
+    this.hoveredPoint.set(null);
+  }
 }
