@@ -1,0 +1,77 @@
+<section class="max-w-5xl mx-auto px-4 md:px-8 py-8 space-y-6">
+
+  <div class="space-y-1">
+    <h1 class="text-3xl md:text-4xl font-bold text-white tracking-tight">Today's Conditions</h1>
+    <p class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-slate-400">
+      <span>NOAA 44098 — Jeffrey's Ledge, NH</span>
+      @if (!loading() && conditions()?.[0]) {
+        <span aria-hidden="true">·</span>
+        <span class="text-slate-300">
+          Updated
+          <time [attr.datetime]="conditions()![0].timestamp">{{ conditions()![0].timestamp }}</time>
+        </span>
+      }
+    </p>
+  </div>
+
+  @if (loading()) {
+    <div
+      class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4"
+      aria-busy="true"
+      aria-label="Loading conditions"
+    >
+      @for (_ of [1,2,3,4,5,6,7,8,9]; track $index) {
+        <div class="bg-slate-900 rounded-xl border border-slate-700/60 p-4 flex flex-col gap-3 animate-pulse">
+          <div class="h-3 w-20 bg-slate-700 rounded-full"></div>
+          <div class="h-8 w-16 bg-slate-700/80 rounded-md mt-1"></div>
+          <div class="h-2 w-12 bg-slate-700/60 rounded-full"></div>
+        </div>
+      }
+    </div>
+  } @else if (error()) {
+    <div
+      class="rounded-xl bg-slate-900 border border-red-900/50 p-6 flex flex-col items-center gap-3 text-center"
+      role="alert"
+    >
+      <span class="text-red-400 text-2xl" aria-hidden="true">⚠</span>
+      <p class="text-white font-semibold">Couldn't load conditions</p>
+      <p class="text-sm text-slate-400">The NOAA buoy may be offline or unreachable. Try again in a few minutes.</p>
+    </div>
+  } @else {
+    <div
+      class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4"
+      role="list"
+      aria-label="Buoy conditions"
+    >
+      @for (card of cards(); track card.label) {
+        <app-condition-card [card]="card" />
+      }
+    </div>
+  }
+
+  <hlm-card size="sm" class="mx-auto w-full max-w-sm">
+			<hlm-card-header>
+				<h3 hlmCardTitle>Small Card</h3>
+				<p hlmCardDescription>This card uses the small size variant.</p>
+			</hlm-card-header>
+			<div hlmCardContent>
+				<p>The card component supports a size prop that can be set to "sm" for a more compact appearance.</p>
+			</div>
+			<hlm-card-footer>
+				<button hlmBtn variant="outline" size="sm" class="w-full">Action</button>
+			</hlm-card-footer>
+		</hlm-card>
+
+  <footer class="pt-4 border-t border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500">
+    <span>NOAA Station 44098 — Jeffrey's Ledge, NH · ~80mi offshore</span>
+    <a
+      href="https://www.ndbc.noaa.gov/station_page.php?station=44098"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-slate-400 hover:text-teal-400 underline underline-offset-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 rounded"
+    >
+      View on NDBC
+    </a>
+  </footer>
+
+</section>

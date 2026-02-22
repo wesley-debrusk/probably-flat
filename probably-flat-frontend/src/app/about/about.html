@@ -1,0 +1,51 @@
+<section class="max-w-5xl mx-auto px-4 md:px-8 py-8">
+  <div class="max-w-2xl space-y-8">
+
+    <div class="space-y-2">
+      <h1 class="text-3xl font-bold text-white tracking-tight">About probably flat</h1>
+      <p class="text-slate-400 text-sm">A minimal surf conditions dashboard for New Hampshire's coastline.</p>
+    </div>
+
+    <div class="bg-slate-900 rounded-xl border border-teal-500/20 p-5 flex flex-col gap-2">
+      <p class="text-xs font-medium text-teal-400 uppercase tracking-widest">Data Source</p>
+      <p class="text-white font-semibold">NOAA 44098 — Jeffrey's Ledge, NH</p>
+      <p class="text-sm text-slate-400">Located approximately 80 miles offshore in the Gulf of Maine. Data updates hourly.</p>
+      <a
+        href="https://www.ndbc.noaa.gov/station_page.php?station=44098"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-sm text-teal-400 hover:text-teal-300 underline underline-offset-2 w-fit transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 rounded"
+      >
+        View on NDBC →
+      </a>
+    </div>
+
+    <div>
+      <h2 class="text-lg font-semibold text-white mb-4">What the numbers mean</h2>
+      <dl class="space-y-0 divide-y divide-slate-800">
+        @for (entry of glossary; track entry.term) {
+          <div class="py-4 grid grid-cols-[auto_1fr] gap-x-4 items-start">
+            <div class="flex flex-col items-center gap-1 w-12">
+              <span class="text-xl" [class]="entry.iconClass" aria-hidden="true">{{ entry.icon }}</span>
+              <span class="text-xs text-slate-500 text-center leading-tight">{{ entry.short }}</span>
+            </div>
+            <div class="space-y-0.5">
+              <dt class="text-sm font-medium text-slate-200">{{ entry.term }}</dt>
+              <dd class="text-sm text-slate-400 leading-relaxed">{{ entry.definition }}</dd>
+            </div>
+          </div>
+        }
+      </dl>
+    </div>
+
+    <div class="space-y-3 text-sm text-slate-400 leading-relaxed pt-2 border-t border-slate-800">
+      <p>
+        "Probably flat" is a New England surfer's resigned optimism — the waves are probably small, but you check anyway.
+      </p>
+      <p>
+        This app pulls live data directly from NOAA's National Data Buoy Center. No accounts, no tracking, no ads.
+      </p>
+    </div>
+
+  </div>
+</section>
