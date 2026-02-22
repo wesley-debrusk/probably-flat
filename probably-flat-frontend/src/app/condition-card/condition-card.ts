@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { HlmCardImports } from '@spartan-ng/helm/card';
 
 export type CardCategory = 'wave' | 'wind' | 'temp';
 
@@ -15,15 +16,22 @@ export interface ConditionCard {
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[attr.aria-label]': 'card().label + ": " + card().value + " " + card().unit',
-    class: 'bg-slate-900 rounded-xl border border-slate-700/60 p-4 flex flex-col gap-3 relative overflow-hidden hover:border-slate-600/80 transition-colors duration-200',
-    style: 'border-left-width: 2px;',
     role: 'listitem',
-    '[class.border-l-teal-500]': 'card().category === "wave"',
-    '[class.border-l-orange-500]': 'card().category === "wind"',
-    '[class.border-l-indigo-500]': 'card().category === "temp"',
   },
+  imports: [HlmCardImports],
   templateUrl: './condition-card.html',
 })
 export class ConditionCardComponent {
   card = input.required<ConditionCard>();
+
+  protected readonly categoryBorderClass = computed(() => {
+    const cat = this.card().category;
+    if (cat === 'wave') return 'border-l-teal-500';
+    if (cat === 'wind') return 'border-l-orange-500';
+    return 'border-l-indigo-500';
+  });
+
+  protected readonly showUnit = computed(
+    () => this.card().value !== 'N/A' && !!this.card().unit,
+  );
 }
