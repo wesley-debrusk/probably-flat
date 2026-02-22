@@ -1,12 +1,12 @@
-<div hlmCard size="sm"
+<hlm-card size="sm"
   style="border-left-width: 2px"
   [class]="categoryBorderClass()">
-  <div hlmCardHeader>
+  <hlm-card-header>
     <p hlmCardTitle class="flex items-center gap-2 text-xs font-medium uppercase tracking-widest">
       <span aria-hidden="true">{{ card().icon }}</span>
       {{ card().label }}
     </p>
-  </div>
+  </hlm-card-header>
   <div hlmCardContent>
     <p class="flex items-baseline gap-1.5">
       <span class="text-3xl font-bold tabular-nums">{{ card().value }}</span>
@@ -15,4 +15,4 @@
       }
     </p>
   </div>
-</div>
+</hlm-card>
