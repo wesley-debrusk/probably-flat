@@ -63,7 +63,8 @@ export class BuoyService {
     const day = get('DD');
     const hour = get('hh');
     const min = get('mm');
-    const timestamp = `${month}/${day}/20${year} ${hour}:${min} UTC`;
+    const fullYear = year.length === 4 ? year : `20${year}`;
+    const timestamp = `${month}/${day}/${fullYear} ${hour}:${min} UTC`;
 
     return {
       timestamp,
