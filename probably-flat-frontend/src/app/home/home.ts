@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal, computed } from '@angular/core';
 import { BuoyService, BuoyData } from '../services/buoy-service';
 import { ConditionCardComponent, ConditionCard } from '../condition-card/condition-card';
-import { HlmCardImports } from '@spartan-ng/helm/card';
 
 function degreesToCompass(deg: string): string {
   const n = parseFloat(deg);
@@ -15,7 +14,7 @@ function degreesToCompass(deg: string): string {
   templateUrl: './home.html',
   styleUrl: './home.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ConditionCardComponent, HlmCardImports],
+  imports: [ConditionCardComponent],
 })
 export class Home {
   private buoyService = inject(BuoyService);
