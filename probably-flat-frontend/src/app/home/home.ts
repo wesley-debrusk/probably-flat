@@ -14,6 +14,13 @@ export function formatRelativeTime(date: Date, now: number): string {
   return diffDay === 1 ? '1 day ago' : `${diffDay} days ago`;
 }
 
+function parseConditionTimestamp(ts: string): Date | null {
+  const match = ts.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4}) (\d{2}):(\d{2}) UTC$/);
+  if (!match) return null;
+  const [, mm, dd, yyyy, hh, min] = match;
+  return new Date(`${yyyy}-${mm.padStart(2, '0')}-${dd.padStart(2, '0')}T${hh}:${min}:00Z`);
+}
+
 function degreesToCompass(deg: string): string {
   const n = parseFloat(deg);
   if (isNaN(n)) return deg;
@@ -34,6 +41,21 @@ export class Home {
   conditions = signal<BuoyData[] | null>(null);
   loading = signal(true);
   error = signal(false);
+  private readonly now = signal(Date.now());
+
+  private readonly latestDate = computed<Date | null>(() => {
+    const ts = this.conditions()?.[0]?.timestamp;
+    return ts ? parseConditionTimestamp(ts) : null;
+  });
+
+  updatedAt = computed<string | null>(() => {
+    const date = this.latestDate();
+    return date ? formatRelativeTime(date, this.now()) : null;
+  });
+
+  protected readonly updatedAtIso = computed<string | null>(() =>
+    this.latestDate()?.toISOString() ?? null
+  );
 
   cards = computed<ConditionCard[]>(() => {
     const d = this.conditions()?.[0];
@@ -52,6 +74,7 @@ export class Home {
   });
 
   constructor() {
+    setInterval(() => this.now.set(Date.now()), 60_000);
     this.buoyService.getCurrentConditions().subscribe(data => {
       this.conditions.set(data);
       this.loading.set(false);
