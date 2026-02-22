@@ -1,0 +1,61 @@
+<hlm-card>
+  <hlm-card-header>
+    <p hlmCardTitle class="flex items-center gap-2 text-xs font-medium uppercase tracking-widest">
+      <span aria-hidden="true">🌊</span>
+      Wave Height — Past 24h
+    </p>
+  </hlm-card-header>
+  <div hlmCardContent>
+    @if (!hasData()) {
+      <div
+        class="flex h-40 items-center justify-center rounded-lg border border-dashed border-slate-700 text-sm text-muted-foreground"
+        role="status"
+        aria-label="No wave height data available for the past 24 hours"
+      >
+        No wave height data available
+      </div>
+    } @else {
+      <svg
+        [attr.viewBox]="'0 0 ' + layout.viewW + ' ' + layout.viewH"
+        width="100%"
+        preserveAspectRatio="none"
+        role="img"
+        aria-label="Wave height over the past 24 hours"
+        aria-describedby="wave-chart-desc"
+      >
+        <desc id="wave-chart-desc">Line chart showing wave height in feet over the past 24 hours from NOAA buoy 44098.</desc>
+        <defs>
+          <linearGradient id="waveAreaGradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#14b8a6" stop-opacity="0.25" />
+            <stop offset="100%" stop-color="#14b8a6" stop-opacity="0.02" />
+          </linearGradient>
+        </defs>
+        <g [attr.transform]="'translate(' + layout.margin.left + ',' + layout.margin.top + ')'">
+          @for (tick of yTicks(); track tick.offset) {
+            <line [attr.x1]="0" [attr.x2]="layout.innerW" [attr.y1]="tick.offset" [attr.y2]="tick.offset" stroke="currentColor" class="text-slate-700/60" stroke-width="1" />
+          }
+          @if (areaPath()) {
+            <path [attr.d]="areaPath()" fill="url(#waveAreaGradient)" />
+          }
+          @if (linePath()) {
+            <path [attr.d]="linePath()" fill="none" stroke="#14b8a6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          }
+          <line [attr.x1]="0" [attr.x2]="layout.innerW" [attr.y1]="layout.innerH" [attr.y2]="layout.innerH" stroke="currentColor" class="text-slate-600" stroke-width="1" />
+          @for (tick of xTicks(); track tick.offset) {
+            <g [attr.transform]="'translate(' + tick.offset + ',0)'">
+              <line [attr.y1]="layout.innerH" [attr.y2]="layout.innerH + 5" stroke="currentColor" class="text-slate-600" stroke-width="1" />
+              <text [attr.y]="layout.innerH + 18" text-anchor="middle" font-size="11" fill="currentColor" class="text-slate-400">{{ tick.label }}</text>
+            </g>
+          }
+          @for (tick of yTicks(); track tick.offset) {
+            <g [attr.transform]="'translate(0,' + tick.offset + ')'">
+              <line x1="-4" x2="0" stroke="currentColor" class="text-slate-600" stroke-width="1" />
+              <text x="-8" text-anchor="end" dominant-baseline="middle" font-size="11" fill="currentColor" class="text-slate-400">{{ tick.label }}</text>
+            </g>
+          }
+          <text [attr.x]="-layout.innerH / 2" y="-32" text-anchor="middle" font-size="10" fill="currentColor" class="text-slate-500" transform="rotate(-90)">ft</text>
+        </g>
+      </svg>
+    }
+  </div>
+</hlm-card>

@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal, computed } from '@angular/core';
 import { BuoyService, BuoyData } from '../services/buoy-service';
 import { ConditionCardComponent, ConditionCard } from '../condition-card/condition-card';
+import { WaveHeightChartComponent } from '../wave-height-chart/wave-height-chart';
 
 function degreesToCompass(deg: string): string {
   const n = parseFloat(deg);
@@ -14,7 +15,7 @@ function degreesToCompass(deg: string): string {
   templateUrl: './home.html',
   styleUrl: './home.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ConditionCardComponent],
+  imports: [ConditionCardComponent, WaveHeightChartComponent],
 })
 export class Home {
   private buoyService = inject(BuoyService);
